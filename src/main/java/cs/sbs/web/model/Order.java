@@ -1,5 +1,4 @@
 package cs.sbs.web.model;
-
 public class Order {
     private static int nextId = 1001;  // 自动生成订单ID
 
