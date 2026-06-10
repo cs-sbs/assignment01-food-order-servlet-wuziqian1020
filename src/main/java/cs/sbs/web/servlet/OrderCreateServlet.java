@@ -1,49 +1,69 @@
 package cs.sbs.web.servlet;
 
 import cs.sbs.web.model.Order;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+@WebServlet("/order")
 public class OrderCreateServlet extends HttpServlet {
 
-    // 改为 static，让所有实例共享同一个订单列表
-    private static List<Order> orders = new ArrayList<>();
-
-    // 提供一个公共方法供 OrderDetailServlet 访问
-    public static List<Order> getOrders() {
-        return orders;
+    @Override
+    public void init() {
+        ServletContext ctx = getServletContext();
+        if (ctx.getAttribute("orderDB") == null) {
+            ctx.setAttribute("orderDB", new HashMap<Integer, Order>());
+            ctx.setAttribute("autoId", 1001);
+        }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        resp.setContentType("text/plain; charset=UTF-8");
+        response.setContentType("text/plain;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
 
-        String customer = req.getParameter("customer");
-        String food = req.getParameter("food");
-        String quantityStr = req.getParameter("quantity");
+        String customer = request.getParameter("customer");
+        String food = request.getParameter("food");
+        String qtyStr = request.getParameter("quantity");
 
-        if (customer == null || customer.isEmpty() ||
-                food == null || food.isEmpty() ||
-                quantityStr == null || quantityStr.isEmpty()) {
-            resp.getWriter().println("Error: missing parameters");
+        // 空参数校验
+        if (customer == null || customer.isBlank()
+                || food == null || food.isBlank()
+                || qtyStr == null || qtyStr.isBlank()) {
+            out.println("Error: Missing required parameters");
             return;
         }
 
+        // 数量校验
         int quantity;
         try {
-            quantity = Integer.parseInt(quantityStr);
+            quantity = Integer.parseInt(qtyStr.trim());
             if (quantity <= 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
-            resp.getWriter().println("Error: quantity must be a valid number");
+            out.println("Error: quantity must be a valid number");
             return;
         }
 
-        Order order = new Order(customer, food, quantity);
-        orders.add(order);
-        resp.getWriter().println("Order Created: " + order.getId());
+        // 存入全局上下文
+        ServletContext ctx = getServletContext();
+        @SuppressWarnings("unchecked")
+        Map<Integer, Order> orderDB = (Map<Integer, Order>) ctx.getAttribute("orderDB");
+        int autoId = (Integer) ctx.getAttribute("autoId");
+
+        Order newOrder = new Order(autoId, customer, food, quantity);
+        orderDB.put(autoId, newOrder);
+        ctx.setAttribute("autoId", autoId + 1);
+
+        out.println("Order Created: " + autoId);
     }
 }

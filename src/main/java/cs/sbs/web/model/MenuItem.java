@@ -1,19 +1,17 @@
 package cs.sbs.web.model;
 
 public class MenuItem {
-    private String name;
-    private int price;
+    private final int id;
+    private final String name;
+    private final double price;
 
-    public MenuItem(String name, int price) {  // 注意：不要写 price: 8
+    public MenuItem(int id, String name, double price) {
+        this.id = id;
         this.name = name;
         this.price = price;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getPrice() {
-        return price;
-    }
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
 }

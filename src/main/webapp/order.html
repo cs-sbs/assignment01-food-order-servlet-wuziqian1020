@@ -1,26 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>外卖平台 - 首页</title>
+    <title>Food Order</title>
 </head>
 <body>
-<h1>欢迎来到外卖平台</h1>
-
-<h2>创建订单</h2>
+<h2>Create Food Order</h2>
 <form action="/order" method="post">
-    <label>Customer Name: <input type="text" name="customer"></label><br>
-    <label>Food Name: <input type="text" name="food"></label><br>
-    <label>Quantity: <input type="number" name="quantity"></label><br>
+    Customer Name: <input type="text" name="customer"><br>
+    Food Name: <input type="text" name="food"><br>
+    Quantity: <input type="number" name="quantity"><br>
     <input type="submit" value="Place Order">
-</form>
-
-<h2>菜单查询</h2>
-<a href="/menu">查看所有菜单</a>
-
-<form action="/menu" method="get">
-    <label>搜索菜品: <input type="text" name="name"></label>
-    <input type="submit" value="搜索">
 </form>
 </body>
 </html>

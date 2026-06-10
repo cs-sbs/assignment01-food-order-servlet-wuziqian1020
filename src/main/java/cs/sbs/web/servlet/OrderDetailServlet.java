@@ -1,50 +1,56 @@
 package cs.sbs.web.servlet;
 
 import cs.sbs.web.model.Order;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import java.io.IOException;
-import java.util.List;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
+
+@WebServlet("/order/*")
 public class OrderDetailServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        resp.setContentType("text/plain; charset=UTF-8");
+        response.setContentType("text/plain;charset=UTF-8");
+        PrintWriter out = response.getWriter();
 
-        // 从 OrderCreateServlet 获取共享的订单列表
-        List<Order> orders = OrderCreateServlet.getOrders();
-
-        String path = req.getPathInfo();
+        String path = request.getPathInfo();
         if (path == null || path.length() <= 1) {
-            resp.getWriter().println("Error: missing order id");
+            out.println("Error: Order not found");
             return;
         }
 
+        int orderId;
         try {
-            int id = Integer.parseInt(path.substring(1));
-            Order order = null;
-            for (Order o : orders) {
-                if (o.getId() == id) {
-                    order = o;
-                    break;
-                }
-            }
-
-            if (order == null) {
-                resp.getWriter().println("Error: order not found");
-                return;
-            }
-
-            resp.getWriter().println("Order Detail");
-            resp.getWriter().println("Order ID: " + order.getId());
-            resp.getWriter().println("Customer: " + order.getCustomer());
-            resp.getWriter().println("Food: " + order.getFood());
-            resp.getWriter().println("Quantity: " + order.getQuantity());
-
+            orderId = Integer.parseInt(path.substring(1));
         } catch (NumberFormatException e) {
-            resp.getWriter().println("Error: invalid order id");
+            out.println("Error: Order not found");
+            return;
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<Integer, Order> orderDB = (Map<Integer, Order>) getServletContext().getAttribute("orderDB");
+        if (orderDB == null) {
+            out.println("Error: Order not found");
+            return;
+        }
+
+        Order order = orderDB.get(orderId);
+        if (order == null) {
+            out.println("Error: Order not found");
+        } else {
+            out.println("Order Detail");
+            out.println();
+            out.println("Order ID: " + order.getOrderId());
+            out.println("Customer: " + order.getCustomerName());
+            out.println("Food: " + order.getFoodName());
+            out.println("Quantity: " + order.getQuantity());
         }
     }
 }

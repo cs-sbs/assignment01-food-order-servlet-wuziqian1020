@@ -1,32 +1,20 @@
 package cs.sbs.web.model;
+
 public class Order {
-    private static int nextId = 1001;  // 自动生成订单ID
+    private final int orderId;
+    private final String customerName;
+    private final String foodName;
+    private final int quantity;
 
-    private int id;
-    private String customer;
-    private String food;
-    private int quantity;
-
-    public Order(String customer, String food, int quantity) {
-        this.id = nextId++;
-        this.customer = customer;
-        this.food = food;
+    public Order(int orderId, String customerName, String foodName, int quantity) {
+        this.orderId = orderId;
+        this.customerName = customerName;
+        this.foodName = foodName;
         this.quantity = quantity;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getCustomer() {
-        return customer;
-    }
-
-    public String getFood() {
-        return food;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
+    public int getOrderId() { return orderId; }
+    public String getCustomerName() { return customerName; }
+    public String getFoodName() { return foodName; }
+    public int getQuantity() { return quantity; }
 }
