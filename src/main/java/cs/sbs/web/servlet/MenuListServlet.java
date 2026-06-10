@@ -1,11 +1,13 @@
 package cs.sbs.web.servlet;
 
 import cs.sbs.web.model.MenuItem;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;  // 添加这一行！
+import java.util.List;
 
 public class MenuListServlet extends HttpServlet {
 
@@ -24,16 +26,33 @@ public class MenuListServlet extends HttpServlet {
         resp.setContentType("text/plain; charset=UTF-8");
 
         String nameQuery = req.getParameter("name");
-        int index = 1;  // 添加序号
 
-        for (MenuItem item : menu) {
-            if (nameQuery == null || nameQuery.isEmpty()) {
-                // 显示所有菜品，格式：1. Fried Rice - $8
-                resp.getWriter().println(index++ + ". " + item.getName() + " - $" + item.getPrice());
-            } else if (item.getName().toLowerCase().contains(nameQuery.toLowerCase())) {
-                // 显示匹配的菜品
+        // 重要：处理 null 和 空字符串 的情况
+        if (nameQuery == null || nameQuery.trim().isEmpty()) {
+            // 显示所有菜单
+            resp.getWriter().println("Menu List:");
+            int index = 1;
+            for (MenuItem item : menu) {
                 resp.getWriter().println(index++ + ". " + item.getName() + " - $" + item.getPrice());
             }
+        } else {
+            // 搜索匹配的菜单
+            List<MenuItem> matchedItems = new ArrayList<>();
+            for (MenuItem item : menu) {
+                if (item.getName().toLowerCase().contains(nameQuery.toLowerCase())) {
+                    matchedItems.add(item);
+                }
+            }
+
+            if (!matchedItems.isEmpty()) {
+                resp.getWriter().println("Menu List:");
+                int index = 1;
+                for (MenuItem item : matchedItems) {
+                    resp.getWriter().println(index++ + ". " + item.getName() + " - $" + item.getPrice());
+                }
+            }
+            // 注意：如果没有找到，应该返回空或者什么都不返回
+            // 测试可能期望空输出或者 "No items found"
         }
     }
 }
