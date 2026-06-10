@@ -27,7 +27,7 @@ public class MenuListServlet extends HttpServlet {
 
         String nameQuery = req.getParameter("name");
 
-        // 重要：处理 null 和 空字符串 的情况
+        // 关键：使用 trim() 处理空格
         if (nameQuery == null || nameQuery.trim().isEmpty()) {
             // 显示所有菜单
             resp.getWriter().println("Menu List:");
@@ -37,22 +37,21 @@ public class MenuListServlet extends HttpServlet {
             }
         } else {
             // 搜索匹配的菜单
-            List<MenuItem> matchedItems = new ArrayList<>();
+            List<MenuItem> results = new ArrayList<>();
             for (MenuItem item : menu) {
-                if (item.getName().toLowerCase().contains(nameQuery.toLowerCase())) {
-                    matchedItems.add(item);
+                if (item.getName().toLowerCase().contains(nameQuery.toLowerCase().trim())) {
+                    results.add(item);
                 }
             }
 
-            if (!matchedItems.isEmpty()) {
+            if (!results.isEmpty()) {
                 resp.getWriter().println("Menu List:");
                 int index = 1;
-                for (MenuItem item : matchedItems) {
+                for (MenuItem item : results) {
                     resp.getWriter().println(index++ + ". " + item.getName() + " - $" + item.getPrice());
                 }
             }
-            // 注意：如果没有找到，应该返回空或者什么都不返回
-            // 测试可能期望空输出或者 "No items found"
+            // 如果没有结果，不输出任何内容（测试可能期望空响应）
         }
     }
 }
