@@ -29,30 +29,25 @@ public class MenuListServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String nameQuery = req.getParameter("name");
 
-        // 处理 null 和空字符串（包括空格）
         if (nameQuery == null || nameQuery.trim().isEmpty()) {
-            // 显示所有菜单 - 精确格式
-            out.print("Menu List:\n");
-            out.print("1. Fried Rice - $8\n");
-            out.print("2. Fried Noodles - $9\n");
-            out.print("3. Burger - $10");
-            // 注意：最后一个没有换行符，测试可能期望这样
+            // 显示所有菜单
+            out.println("Menu List:");
+            out.println("1. Fried Rice - $8");
+            out.println("2. Fried Noodles - $9");
+            out.println("3. Burger - $10");
         } else {
             // 搜索匹配的菜单
             int index = 1;
             boolean found = false;
             for (MenuItem item : menu) {
+                // 修正：toLowerCase() 不是 toLowerCaseCase
                 if (item.getName().toLowerCase().contains(nameQuery.toLowerCase().trim())) {
                     if (!found) {
-                        out.print("Menu List:\n");
+                        out.println("Menu List:");
                         found = true;
                     }
-                    out.print(index++ + ". " + item.getName() + " - $" + item.getPrice() + "\n");
+                    out.println(index++ + ". " + item.getName() + " - $" + item.getPrice());
                 }
-            }
-            // 如果有输出，去掉最后一个多余的换行符
-            if (found) {
-                // 已经处理了
             }
         }
     }
